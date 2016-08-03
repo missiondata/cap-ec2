@@ -1,7 +1,5 @@
 # Cap-EC2
 
-[![Gem Version](https://badge.fury.io/rb/cap-ec2.svg)](http://badge.fury.io/rb/cap-ec2) [![Code Climate](https://codeclimate.com/github/forward3d/cap-ec2.png)](https://codeclimate.com/github/forward3d/cap-ec2)
-
 Cap-EC2 is used to generate Capistrano namespaces and tasks from Amazon EC2 instance tags,
 dynamically building the list of servers to be deployed to.
 
@@ -51,6 +49,7 @@ set :ec2_stages_tag, 'Stages'
 set :ec2_access_key_id, nil
 set :ec2_secret_access_key, nil
 set :ec2_region, %w{} # REQUIRED
+set :ec2_assume_role, nil
 set :ec2_contact_point, nil
 
 set :ec2_filter_by_status_ok?, nil
@@ -73,6 +72,29 @@ configuration the environment variables `AWS_ACCESS_KEY_ID`,
 `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` will be checked and the
 default credential load order (including instance profiles
 credentials) will be honored.
+
+#### AWS Cross-Account Access via IAM Roles
+Following the tutorial [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html)
+you can enter the role ARN for the role to be assumed in `:ec2_assume_role` using
+the format "arn:aws:iam::999999999999:role/UpdateAPP" where '999999999999' is the
+account ID for the account containing the target EC2 instances.
+
+The necessary access permissions policy is
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
 
 #### Misc settings
 

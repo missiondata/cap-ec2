@@ -30,6 +30,6 @@ namespace :load do
     set :ec2_access_key_id, nil
     set :ec2_secret_access_key, nil
     set :ec2_region, %w{}
-
+    set :ec2_assume_role, nil
   end
 end

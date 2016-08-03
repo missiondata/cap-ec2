@@ -7,16 +7,31 @@ module CapEC2
     def initialize
       load_config
       configured_regions = get_regions(fetch(:ec2_region))
+      assume_role = fetch(:ec2_assume_role)
       @ec2 = {}
       configured_regions.each do |region|
-        @ec2[region] = ec2_connect(region)
+        @ec2[region] = ec2_connect(region, assume_role)
       end
     end
 
-    def ec2_connect(region=nil)
+    def ec2_connect(region=nil, assume_role=nil)
+      access_key_id = fetch(:ec2_access_key_id)
+      secret_access_key = fetch(:ec2_secret_access_key)
+      session_token = nil
+      if assume_role
+        sts = Aws::STS::Client.new
+        role = sts.assume_role(
+          role_arn: assume_role,
+          role_session_name: 'capistrano'
+        )
+        access_key_id = role.credentials.access_key_id
+        secret_access_key = role.credentials.secret_access_key
+        session_token = role.credentials.session_token
+      end
       Aws::EC2::Client.new(
-        access_key_id: fetch(:ec2_access_key_id),
-        secret_access_key: fetch(:ec2_secret_access_key),
+        access_key_id: access_key_id,
+        secret_access_key: secret_access_key,
+        session_token: session_token,
         region: region
       )
     end
