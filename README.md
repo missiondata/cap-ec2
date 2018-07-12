@@ -45,7 +45,9 @@ set :ec2_config, 'config/ec2.yml'
 set :ec2_project_tag, 'Project'
 set :ec2_roles_tag, 'Roles'
 set :ec2_stages_tag, 'Stages'
+set :ec2_tag_delimiter, ","
 
+set :ec2_profile, 'myservice'       # use ~/.aws/credentials with profile_name
 set :ec2_access_key_id, nil
 set :ec2_secret_access_key, nil
 set :ec2_region, %w{} # REQUIRED
@@ -58,7 +60,7 @@ set :ec2_filter_by_status_ok?, nil
 #### Order of inheritance
 
 `cap-ec2` supports multiple methods of configuration. The order of inheritance is:
-YAML File > User Capistrano Config > Default Capistrano Config > ENV variables.
+YAML File > ~/.aws/credentials > User Capistrano Config > Default Capistrano Config > ENV variables.
 
 #### Regions
 
@@ -113,6 +115,12 @@ The necessary access permissions policy is
 
   Cap-EC2 will look for a tag with this name to determine which instances belong to
   a given role. The tag name defaults to "Roles".
+
+* tag_delimiter
+
+  When Cap-EC2 reads a tag value, this will be the default delimiter.
+  For example, for a Roles tag with web,db and tag_delimiter set to ,(comma)
+  the server will have the web and db roles.
 
 * filter_by_status_ok?
 

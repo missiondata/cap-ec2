@@ -6,8 +6,8 @@ require 'cap-ec2/version'
 Gem::Specification.new do |spec|
   spec.name          = "cap-ec2"
   spec.version       = CapEC2::VERSION
-  spec.authors       = ["Andy Sykes", "Robert Coleman"]
-  spec.email         = ["github@tinycat.co.uk", "github@robert.net.nz"]
+  spec.authors       = ["Andy Sykes", "Robert Coleman", "Forward3D Developers"]
+  spec.email         = ["github@tinycat.co.uk", "github@robert.net.nz", "developers@forward3d.com"]
   spec.description   = %q{Cap-EC2 is used to generate Capistrano namespaces and tasks from Amazon EC2 instance tags, dynamically building the list of servers to be deployed to.}
   spec.summary       = %q{Cap-EC2 is used to generate Capistrano namespaces and tasks from Amazon EC2 instance tags, dynamically building the list of servers to be deployed to.}
   spec.homepage      = "https://github.com/forward3d/cap-ec2"
@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
 
-  spec.add_dependency "aws-sdk", "~> 2.0"
+  spec.add_dependency "aws-sdk", ">= 2.0"
   spec.add_dependency "capistrano", ">= 3.0"
   spec.add_dependency "terminal-table"
   spec.add_dependency "colorize"

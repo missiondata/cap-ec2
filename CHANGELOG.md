@@ -1,9 +1,26 @@
 # Cap-EC2 changelog
 
+## Mission Data Customizations
+
+* Add the ability to use IAM roles to grant cross-account access for deployment.
+
+## 1.1.2
+
+* Allow using aws-sdk v3 [@magnusvk](https://github.com/magnusvk)
+* Fix NoMethodError undefined method call for Hash [@ur5us](https://github.com/ur5us)
+* Allow tag value delimiter to be configurable [@erez-rabih](https://github.com/erez-rabih)
+
+## 1.1.1
+
+Require aws-sdk v2 instead of v1
+
+* Require aws-sdk v2 instead of v1 [@hajder](https://github.com/hajder)
+
 ## 1.1.0
 
-* Using kylev/cap-ec2, incorporated switch to AWS SDK v2
-* Add the ability to use IAM roles to grant cross-account access for deployment.
+Upgrade to AWS's v2 SDK
+
+* Upgrade to AWS's v2 SDK [@kylev](https://github.com/kylev)
 
 ## 1.0.0
 
