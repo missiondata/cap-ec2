@@ -1,8 +1,15 @@
 # Cap-EC2 changelog
 
-## Mission Data Customizations
+## 1.2.0
+
+* Make it clear who is managing this fork since original devs have dropped support.
+* Move back to semantic versioning.
+
+## 1.1.2-md1
 
 * Add the ability to use IAM roles to grant cross-account access for deployment.
+* Switch to using aws-sdk-ec2 instead of aws-sdk
+
 
 ## 1.1.2
 

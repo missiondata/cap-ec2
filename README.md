@@ -314,6 +314,8 @@ Example:
 
 ## Acknowledgements
 
+This fork is maintained by [Mission Data](https://www.missiondata.com) as part of their ongoing deployment efforts. We thank Forward3D for their work in creating the project.
+
 Thanks to [Rylon](https://github.com/Rylon) for maintaining Capify-EC2 and
 reviewing my thought processes for this project.
 
