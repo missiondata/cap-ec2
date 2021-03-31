@@ -1,5 +1,8 @@
 # Cap-EC2 changelog
 
+## 1.3.0
+* Add task `connect_point` to get the hostname/IP for the instances to which you wish to connect.
+
 ## 1.2.0
 
 * Make it clear who is managing this fork since original devs have dropped support.

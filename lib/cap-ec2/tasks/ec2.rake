@@ -15,6 +15,10 @@ namespace :ec2 do
     ec2_handler.instance_ids
   end
 
+  desc "Show connection points for EC2 instance IDs that match this project"
+  task :connect_point do
+    ec2_handler.connect_point
+  end
 end
 
 

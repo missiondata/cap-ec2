@@ -50,6 +50,14 @@ module CapEC2
                    .join("\n")
     end
 
+    def connect_point
+      puts defined_roles.map {|r| get_servers_for_role(r)}
+                   .flatten
+                   .uniq {|i| i.instance_id}
+                   .map {|i| CapEC2::Utils.contact_point(i)}
+                   .join("\n")
+    end
+
     def instance_ids
       puts defined_roles.map {|r| get_servers_for_role(r)}
                    .flatten
