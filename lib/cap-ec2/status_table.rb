@@ -22,22 +22,22 @@ module CapEC2
 
     def output
       table = Terminal::Table.new(
-        :style => {
-          :border_x => "",
-          :border_i => "",
-          :border_y => ""
+        style: {
+          border_x: '',
+          border_i: '',
+          border_y: ''
         }
       )
       table.add_row header_row
-      @instances.each_with_index do |instance,index|
+      @instances.each_with_index do |instance, index|
         table.add_row instance_to_row(instance, index)
       end
-      puts table.to_s
+      puts table
     end
 
     def instance_to_row(instance, index)
       [
-        sprintf("%02d:", index),
+        format('%02d:', index),
         tag_value(instance, 'Name') || '',
         instance.instance_id,
         instance.instance_type,

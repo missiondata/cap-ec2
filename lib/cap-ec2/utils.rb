@@ -2,10 +2,9 @@ require 'aws-sdk-ec2'
 
 module CapEC2
   module Utils
-
     module Server
       def ec2_tags
-        id = self.properties.fetch(:aws_instance_id)
+        id = properties.fetch(:aws_instance_id)
         ec2_handler.get_server(id).tags
       end
     end
@@ -32,9 +31,9 @@ module CapEC2
 
     def self.contact_point_mapping
       {
-        :public_dns => :public_dns_name,
-        :public_ip => :public_ip_address,
-        :private_ip => :private_ip_address
+        public_dns: :public_dns_name,
+        public_ip: :public_ip_address,
+        private_ip: :private_ip_address
       }
     end
 
@@ -55,30 +54,27 @@ module CapEC2
       end
 
       config_location = File.expand_path(fetch(:ec2_config), Dir.pwd) if fetch(:ec2_config)
-      if config_location && File.exist?(config_location)
-        config = YAML.load(ERB.new(File.read(fetch(:ec2_config))).result)
-        if config
-          set :ec2_project_tag, config['project_tag'] if config['project_tag']
-          set :ec2_roles_tag, config['roles_tag'] if config['roles_tag']
-          set :ec2_stages_tag, config['stages_tag'] if config['stages_tag']
-          set :ec2_tag_delimiter, config['tag_delimiter'] if config['tag_delimiter']
+      return unless config_location && File.exist?(config_location)
 
-          set :ec2_access_key_id, config['access_key_id'] if config['access_key_id']
-          set :ec2_secret_access_key, config['secret_access_key'] if config['secret_access_key']
-          set :ec2_region, config['regions'] if config['regions']
+      config = YAML.load(ERB.new(File.read(fetch(:ec2_config))).result)
+      return unless config
 
-          set :ec2_filter_by_status_ok?, config['filter_by_status_ok?'] if config['filter_by_status_ok?']
-        end
-      end
+      set :ec2_project_tag, config['project_tag'] if config['project_tag']
+      set :ec2_roles_tag, config['roles_tag'] if config['roles_tag']
+      set :ec2_stages_tag, config['stages_tag'] if config['stages_tag']
+      set :ec2_tag_delimiter, config['tag_delimiter'] if config['tag_delimiter']
+
+      set :ec2_access_key_id, config['access_key_id'] if config['access_key_id']
+      set :ec2_secret_access_key, config['secret_access_key'] if config['secret_access_key']
+      set :ec2_region, config['regions'] if config['regions']
+
+      set :ec2_filter_by_status_ok?, config['filter_by_status_ok?'] if config['filter_by_status_ok?']
     end
 
-    def get_regions(regions_array=nil)
-      unless regions_array.nil? || regions_array.empty?
-        return regions_array
-      else
-        fail "You must specify at least one EC2 region."
-      end
-    end
+    def get_regions(regions_array = nil)
+      return regions_array unless regions_array.nil? || regions_array.empty?
 
+      raise 'You must specify at least one EC2 region.'
+    end
   end
 end
