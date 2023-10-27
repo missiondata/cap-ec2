@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = 'Cap-EC2 is used to generate Capistrano namespaces and tasks from Amazon EC2 instance tags, dynamically building the list of servers to be deployed to.'
   spec.homepage      = 'https://github.com/missiondata/cap-ec2'
   spec.license       = 'MIT'
-  spec.required_ruby_version = '~> 2.2.0'
+  spec.required_ruby_version = '>= 2'
 
   spec.files         = `git ls-files`.split($RS)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }

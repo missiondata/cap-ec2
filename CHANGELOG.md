@@ -1,5 +1,9 @@
 # Cap-EC2 changelog
 
+## 1.4.0
+* Remove colorize gem due to use of GPL-2.0 license
+* Ran rubocop, fixed up code formatting issues.
+
 ## 1.3.0
 * Add task `connect_point` to get the hostname/IP for the instances to which you wish to connect.
 
