@@ -3,6 +3,7 @@
 ## Unreleased
 * `:ec2_profile` is passed to the AWS SDK, so session tokens, SSO, `credential_process` and `role_arn` profiles work.
 * `:ec2_assume_role` uses the configured profile or keys to call STS, and refreshes the assumed-role credentials.
+* Fix a missing `require 'erb'` for the YAML config file. The file is now parsed with `YAML.safe_load`.
 * Require Ruby 2.7 or later, as the AWS SDK does.
 * Require MFA to publish the gem to RubyGems.
 

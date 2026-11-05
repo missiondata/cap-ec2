@@ -1,4 +1,6 @@
 require 'aws-sdk-ec2'
+require 'erb'
+require 'yaml'
 
 module CapEC2
   module Utils
@@ -48,7 +50,7 @@ module CapEC2
       config_location = File.expand_path(fetch(:ec2_config), Dir.pwd) if fetch(:ec2_config)
       return unless config_location && File.exist?(config_location)
 
-      config = YAML.load(ERB.new(File.read(fetch(:ec2_config))).result)
+      config = YAML.safe_load(ERB.new(File.read(config_location)).result, aliases: true)
       return unless config
 
       set :ec2_project_tag, config['project_tag'] if config['project_tag']
