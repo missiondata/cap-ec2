@@ -1,6 +1,6 @@
 # Cap-EC2 changelog
 
-## Unreleased
+## 1.6.0
 * **Behavior change:** a deploy now fails before `deploy:starting` when an `ec2_role` matched no instances. Before, it finished without deploying to that role. List roles that can be empty in `:ec2_allow_empty_roles`.
 * `ec2_role` prints a warning when it matches no instances.
 * `Server#ec2_tags` raises a clear error when the instance no longer exists.
