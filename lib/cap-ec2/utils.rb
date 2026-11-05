@@ -7,7 +7,7 @@ module CapEC2
     module Server
       def ec2_tags
         id = properties.fetch(:aws_instance_id)
-        ec2_handler.get_server(id).tags
+        Capistrano::DSL::Ec2.handler.get_server(id).tags
       end
     end
 

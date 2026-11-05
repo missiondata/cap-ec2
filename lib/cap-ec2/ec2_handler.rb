@@ -111,9 +111,12 @@ module CapEC2
     end
 
     def get_server(instance_id)
-      @ec2.reduce([]) do |acc, (_, ec2)|
-        acc << ec2.instances[instance_id]
-      end.flatten.first
+      @ec2.each_value do |ec2|
+        filters = [{ name: 'instance-id', values: [instance_id] }]
+        instance = ec2.describe_instances(filters: filters).reservations.flat_map(&:instances).first
+        return instance if instance
+      end
+      nil
     end
 
     private

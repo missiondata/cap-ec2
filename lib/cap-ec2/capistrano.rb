@@ -12,8 +12,13 @@ load File.expand_path('./tasks/ec2.rake', __dir__)
 module Capistrano
   module DSL
     module Ec2
+      # One handler is shared by the DSL and by Server#ec2_tags.
+      def self.handler
+        @handler ||= CapEC2::EC2Handler.new
+      end
+
       def ec2_handler
-        @ec2_handler ||= CapEC2::EC2Handler.new
+        Ec2.handler
       end
 
       def ec2_role(name, options = {})
