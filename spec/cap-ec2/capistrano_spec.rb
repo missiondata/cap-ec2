@@ -31,5 +31,12 @@ RSpec.describe Capistrano::DSL::Ec2 do
 
       expect(tags.to_h { |t| [t.key, t.value] }).to include('Name' => 'web-1', 'Roles' => 'web')
     end
+
+    it 'raises a clear error when the instance no longer exists' do
+      dsl.ec2_role(:web)
+      client.stub_responses(:describe_instances, reservations: [])
+
+      expect { roles(:web).first.ec2_tags }.to raise_error(/EC2 instance i-1 not found/)
+    end
   end
 end

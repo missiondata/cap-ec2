@@ -1,5 +1,8 @@
 # Cap-EC2 changelog
 
+## Unreleased
+* `Server#ec2_tags` raises a clear error when the instance no longer exists.
+
 ## 1.5.0
 * `:ec2_profile` is passed to the AWS SDK, so session tokens, SSO, `credential_process` and `role_arn` profiles work.
 * `:ec2_assume_role` uses the configured profile or keys to call STS, and refreshes the assumed-role credentials.

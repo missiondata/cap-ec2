@@ -11,7 +11,10 @@ module CapEC2
     module Server
       def ec2_tags
         id = properties.fetch(:aws_instance_id)
-        Capistrano::DSL::Ec2.handler.get_server(id).tags
+        instance = Capistrano::DSL::Ec2.handler.get_server(id)
+        raise "EC2 instance #{id} not found. It may have been terminated after cap-ec2 listed it." unless instance
+
+        instance.tags
       end
     end
 
