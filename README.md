@@ -47,7 +47,7 @@ set :ec2_roles_tag, 'Roles'
 set :ec2_stages_tag, 'Stages'
 set :ec2_tag_delimiter, ","
 
-set :ec2_profile, 'myservice'       # use ~/.aws/credentials with profile_name
+set :ec2_profile, nil               # named AWS profile, e.g. 'myservice'
 set :ec2_access_key_id, nil
 set :ec2_secret_access_key, nil
 set :ec2_region, %w{} # REQUIRED
@@ -61,6 +61,15 @@ set :ec2_filter_by_status_ok?, nil
 
 `cap-ec2` supports multiple methods of configuration. The order of inheritance is:
 YAML File > ~/.aws/credentials > User Capistrano Config > Default Capistrano Config > ENV variables.
+
+#### Profiles
+
+`:ec2_profile` names a profile in `~/.aws/credentials` or `~/.aws/config`.
+The AWS SDK resolves the profile, so session tokens, SSO, `credential_process`
+and `role_arn`/`source_profile` profiles work. When `:ec2_assume_role` is also
+set, the profile supplies the credentials used to assume the role.
+`access_key_id` and `secret_access_key` in the YAML file take precedence over
+`:ec2_profile`.
 
 #### Regions
 

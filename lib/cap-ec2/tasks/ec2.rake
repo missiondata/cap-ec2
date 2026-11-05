@@ -29,6 +29,7 @@ namespace :load do
     set :ec2_stages_tag, 'Stages'
     set :ec2_tag_delimiter, ','
 
+    set :ec2_profile, nil
     set :ec2_access_key_id, nil
     set :ec2_secret_access_key, nil
     set :ec2_region, %w[]

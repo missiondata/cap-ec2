@@ -45,14 +45,6 @@ module CapEC2
     end
 
     def load_config
-      if fetch(:ec2_profile)
-        credentials = Aws::SharedCredentials.new(profile_name: fetch(:ec2_profile)).credentials
-        if credentials
-          set :ec2_access_key_id, credentials.access_key_id
-          set :ec2_secret_access_key, credentials.secret_access_key
-        end
-      end
-
       config_location = File.expand_path(fetch(:ec2_config), Dir.pwd) if fetch(:ec2_config)
       return unless config_location && File.exist?(config_location)
 
@@ -64,8 +56,12 @@ module CapEC2
       set :ec2_stages_tag, config['stages_tag'] if config['stages_tag']
       set :ec2_tag_delimiter, config['tag_delimiter'] if config['tag_delimiter']
 
-      set :ec2_access_key_id, config['access_key_id'] if config['access_key_id']
-      set :ec2_secret_access_key, config['secret_access_key'] if config['secret_access_key']
+      if config['access_key_id'] && config['secret_access_key']
+        # Keys in the YAML file take precedence over :ec2_profile.
+        set :ec2_profile, nil
+        set :ec2_access_key_id, config['access_key_id']
+        set :ec2_secret_access_key, config['secret_access_key']
+      end
       set :ec2_region, config['regions'] if config['regions']
 
       set :ec2_filter_by_status_ok?, config['filter_by_status_ok?'] if config['filter_by_status_ok?']

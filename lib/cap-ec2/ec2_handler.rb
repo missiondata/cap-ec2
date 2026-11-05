@@ -15,25 +15,31 @@ module CapEC2
     end
 
     def ec2_connect(region = nil, assume_role = nil)
+      options = { region: region }.merge(credential_options)
+      if assume_role
+        options = {
+          region: region,
+          credentials: Aws::AssumeRoleCredentials.new(
+            client: Aws::STS::Client.new(options),
+            role_arn: assume_role,
+            role_session_name: 'capistrano'
+          )
+        }
+      end
+      Aws::EC2::Client.new(options)
+    end
+
+    # A named profile is passed to the SDK as-is, so it resolves session
+    # tokens, SSO, credential_process and role_arn/source_profile entries.
+    # With no profile and no keys, the SDK uses its default credential chain.
+    def credential_options
+      return { profile: fetch(:ec2_profile) } if fetch(:ec2_profile)
+
       access_key_id = fetch(:ec2_access_key_id)
       secret_access_key = fetch(:ec2_secret_access_key)
-      session_token = nil
-      if assume_role
-        sts = Aws::STS::Client.new
-        role = sts.assume_role(
-          role_arn: assume_role,
-          role_session_name: 'capistrano'
-        )
-        access_key_id = role.credentials.access_key_id
-        secret_access_key = role.credentials.secret_access_key
-        session_token = role.credentials.session_token
-      end
-      Aws::EC2::Client.new(
-        access_key_id: access_key_id,
-        secret_access_key: secret_access_key,
-        session_token: session_token,
-        region: region
-      )
+      return {} unless access_key_id && secret_access_key
+
+      { access_key_id: access_key_id, secret_access_key: secret_access_key }
     end
 
     def status_table
