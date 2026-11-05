@@ -55,6 +55,7 @@ set :ec2_assume_role, nil
 set :ec2_contact_point, nil
 
 set :ec2_filter_by_status_ok?, nil
+set :ec2_allow_empty_roles, []
 ```
 
 #### Order of inheritance
@@ -218,6 +219,20 @@ In the "production" stage, the `:app` role would apply to `server-2` and `server
 role would apply to `server-3`.
 
 In the "staging" stage, all roles would apply *only* to `server-4`.
+
+### Roles with no instances
+
+If an `ec2_role` matches no instances, cap-ec2 prints a warning when the stage loads:
+
+    cap-ec2: No EC2 instances matched role :db for testapp/production.
+
+A deploy then stops before `deploy:starting`, so it cannot finish "successfully" on zero
+servers. Other tasks, such as `ec2:status`, still run, so you can see which instances match.
+
+If a role can correctly be empty, for example a worker group scaled to zero, list it in
+`:ec2_allow_empty_roles`:
+
+    set :ec2_allow_empty_roles, %i[worker]
 
 ### Servers belonging to multiple projects
 

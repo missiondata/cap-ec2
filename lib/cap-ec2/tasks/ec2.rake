@@ -20,7 +20,16 @@ namespace :ec2 do
   task :connect_point do
     ec2_handler.connect_point
   end
+
+  # Internal: runs before deploy:starting, so it has no description.
+  task :verify_roles do
+    ec2_verify_roles
+  end
 end
+
+# A prerequisite (not Capistrano's `before`) works whether capistrano/deploy
+# is required before or after cap-ec2 in the Capfile.
+task 'deploy:starting' => 'ec2:verify_roles'
 
 namespace :load do
   task :defaults do
@@ -36,5 +45,6 @@ namespace :load do
     set :ec2_secret_access_key, nil
     set :ec2_region, %w[]
     set :ec2_assume_role, nil
+    set :ec2_allow_empty_roles, []
   end
 end
