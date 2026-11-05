@@ -1,6 +1,6 @@
 # Cap-EC2 changelog
 
-## Unreleased
+## 1.5.0
 * `:ec2_profile` is passed to the AWS SDK, so session tokens, SSO, `credential_process` and `role_arn` profiles work.
 * `:ec2_assume_role` uses the configured profile or keys to call STS, and refreshes the assumed-role credentials.
 * Fix `Server#ec2_tags`: it called a method that servers do not have, and `get_server` used the removed aws-sdk v1 `instances` API.
