@@ -1,5 +1,9 @@
 # Cap-EC2 changelog
 
+## Unreleased
+* Require Ruby 2.7 or later, as the AWS SDK does.
+* Require MFA to publish the gem to RubyGems.
+
 ## 1.4.0
 * Remove colorize gem due to use of GPL-2.0 license
 * Ran rubocop, fixed up code formatting issues.
