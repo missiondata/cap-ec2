@@ -7,6 +7,7 @@
 * Fix a missing `require 'erb'` for the YAML config file. The file is now parsed with `YAML.safe_load`.
 * Require Ruby 2.7 or later, as the AWS SDK does.
 * Require MFA to publish the gem to RubyGems.
+* Add an RSpec suite. `bundle exec rake` runs the specs and RuboCop.
 
 ## 1.4.0
 * Remove colorize gem due to use of GPL-2.0 license
