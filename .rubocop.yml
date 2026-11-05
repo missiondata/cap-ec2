@@ -1,0 +1,9 @@
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+
+# RSpec example groups and Rake namespaces are long blocks by nature.
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/cap-ec2/tasks/*.rake'

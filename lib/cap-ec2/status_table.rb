@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module CapEC2
+  # Prints a table of EC2 instances for the ec2:status task.
   class StatusTable
     include CapEC2::Utils
 
@@ -21,13 +24,7 @@ module CapEC2
     end
 
     def output
-      table = Terminal::Table.new(
-        style: {
-          border_x: '',
-          border_i: '',
-          border_y: ''
-        }
-      )
+      table = Terminal::Table.new(style: { border_x: '', border_i: '', border_y: '' })
       table.add_row header_row
       @instances.each_with_index do |instance, index|
         table.add_row instance_to_row(instance, index)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'capistrano/configuration'
 require 'aws-sdk-ec2'
 require 'terminal-table'
@@ -11,6 +13,7 @@ load File.expand_path('./tasks/ec2.rake', __dir__)
 
 module Capistrano
   module DSL
+    # Capistrano DSL methods that build roles from EC2 instance tags.
     module Ec2
       # One handler is shared by the DSL and by Server#ec2_tags.
       def self.handler
@@ -41,6 +44,6 @@ module Capistrano
   end
 end
 
-extend Capistrano::DSL::Ec2
+extend Capistrano::DSL::Ec2 # rubocop:disable Style/MixinUsage -- deploy.rb runs on main
 
 Capistrano::Configuration::Server.include CapEC2::Utils::Server

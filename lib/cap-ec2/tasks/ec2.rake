@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :ec2 do
   desc 'Show all information about EC2 instances that match this project'
   task :status do

@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require 'aws-sdk-ec2'
 
 module CapEC2
+  # Finds the EC2 instances that match the current application, stage and role.
   class EC2Handler
     include CapEC2::Utils
 
@@ -16,16 +19,7 @@ module CapEC2
 
     def ec2_connect(region = nil, assume_role = nil)
       options = { region: region }.merge(credential_options)
-      if assume_role
-        options = {
-          region: region,
-          credentials: Aws::AssumeRoleCredentials.new(
-            client: Aws::STS::Client.new(options),
-            role_arn: assume_role,
-            role_session_name: 'capistrano'
-          )
-        }
-      end
+      options = { region: region, credentials: assume_role_credentials(options, assume_role) } if assume_role
       Aws::EC2::Client.new(options)
     end
 
@@ -43,33 +37,19 @@ module CapEC2
     end
 
     def status_table
-      CapEC2::StatusTable.new(
-        defined_roles.map { |r| get_servers_for_role(r) }.flatten.uniq(&:instance_id)
-      )
+      CapEC2::StatusTable.new(defined_servers)
     end
 
     def server_names
-      puts defined_roles.map { |r| get_servers_for_role(r) }
-                        .flatten
-                        .uniq(&:instance_id)
-                        .map { |i| tag_value(i, 'Name') }
-                        .join("\n")
+      puts defined_servers.map { |i| tag_value(i, 'Name') }.join("\n")
     end
 
     def connect_point
-      puts defined_roles.map { |r| get_servers_for_role(r) }
-                        .flatten
-                        .uniq(&:instance_id)
-                        .map { |i| CapEC2::Utils.contact_point(i) }
-                        .join("\n")
+      puts defined_servers.map { |i| CapEC2::Utils.contact_point(i) }.join("\n")
     end
 
     def instance_ids
-      puts defined_roles.map { |r| get_servers_for_role(r) }
-                        .flatten
-                        .uniq(&:instance_id)
-                        .map(&:instance_id)
-                        .join("\n")
+      puts defined_servers.map(&:instance_id).join("\n")
     end
 
     def defined_roles
@@ -89,25 +69,10 @@ module CapEC2
     end
 
     def get_servers_for_role(role)
-      filters = [
-        { name: 'tag-key', values: [stages_tag, project_tag] },
-        { name: tag(project_tag), values: ["*#{application}*"] },
-        { name: 'instance-state-name', values: %w[running] }
-      ]
-
-      servers = []
-      @ec2.each do |_, ec2|
-        ec2.describe_instances(filters: filters).reservations.each do |r|
-          servers += r.instances.select do |i|
-            instance_has_tag?(i, roles_tag, role) &&
-              instance_has_tag?(i, stages_tag, stage) &&
-              instance_has_tag?(i, project_tag, application) &&
-              (fetch(:ec2_filter_by_status_ok?) ? instance_status_ok?(i) : true)
-          end
-        end
+      servers = @ec2.each_value.flat_map do |ec2|
+        ec2.describe_instances(filters: role_filters).reservations.flat_map(&:instances)
       end
-
-      servers.sort_by { |s| tag_value(s, 'Name') || '' }
+      servers.select { |i| server_matches?(i, role) }.sort_by { |s| tag_value(s, 'Name') || '' }
     end
 
     def get_server(instance_id)
@@ -121,12 +86,39 @@ module CapEC2
 
     private
 
+    def assume_role_credentials(sts_options, role_arn)
+      Aws::AssumeRoleCredentials.new(
+        client: Aws::STS::Client.new(sts_options),
+        role_arn: role_arn,
+        role_session_name: 'capistrano'
+      )
+    end
+
+    def defined_servers
+      defined_roles.flat_map { |r| get_servers_for_role(r) }.uniq(&:instance_id)
+    end
+
+    def role_filters
+      [
+        { name: 'tag-key', values: [stages_tag, project_tag] },
+        { name: tag(project_tag), values: ["*#{application}*"] },
+        { name: 'instance-state-name', values: %w[running] }
+      ]
+    end
+
+    def server_matches?(instance, role)
+      instance_has_tag?(instance, roles_tag, role) &&
+        instance_has_tag?(instance, stages_tag, stage) &&
+        instance_has_tag?(instance, project_tag, application) &&
+        (!fetch(:ec2_filter_by_status_ok?) || instance_status_ok?(instance))
+    end
+
     def instance_has_tag?(instance, key, value)
       (tag_value(instance, key) || '').split(tag_delimiter).map(&:strip).include?(value.to_s)
     end
 
     def instance_status_ok?(instance)
-      @ec2.any? do |_, ec2|
+      @ec2.each_value.any? do |ec2|
         ec2.describe_instance_status(
           instance_ids: [instance.instance_id],
           filters: [{ name: 'instance-status.status', values: %w[ok] }]

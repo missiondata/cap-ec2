@@ -1,9 +1,13 @@
+# frozen_string_literal: true
+
 require 'aws-sdk-ec2'
 require 'erb'
 require 'yaml'
 
 module CapEC2
+  # Tag, contact point and configuration helpers shared by cap-ec2 classes.
   module Utils
+    # Adds EC2 tag lookup to Capistrano servers.
     module Server
       def ec2_tags
         id = properties.fetch(:aws_instance_id)
@@ -46,33 +50,47 @@ module CapEC2
       instance.public_dns_name || instance.public_ip_address || instance.private_ip_address
     end
 
-    def load_config
-      config_location = File.expand_path(fetch(:ec2_config), Dir.pwd) if fetch(:ec2_config)
-      return unless config_location && File.exist?(config_location)
+    CONFIG_SETTINGS = {
+      'project_tag' => :ec2_project_tag,
+      'roles_tag' => :ec2_roles_tag,
+      'stages_tag' => :ec2_stages_tag,
+      'tag_delimiter' => :ec2_tag_delimiter,
+      'regions' => :ec2_region,
+      'filter_by_status_ok?' => :ec2_filter_by_status_ok?
+    }.freeze
 
-      config = YAML.safe_load(ERB.new(File.read(config_location)).result, aliases: true)
+    def load_config
+      config = read_config_file
       return unless config
 
-      set :ec2_project_tag, config['project_tag'] if config['project_tag']
-      set :ec2_roles_tag, config['roles_tag'] if config['roles_tag']
-      set :ec2_stages_tag, config['stages_tag'] if config['stages_tag']
-      set :ec2_tag_delimiter, config['tag_delimiter'] if config['tag_delimiter']
-
-      if config['access_key_id'] && config['secret_access_key']
-        # Keys in the YAML file take precedence over :ec2_profile.
-        set :ec2_profile, nil
-        set :ec2_access_key_id, config['access_key_id']
-        set :ec2_secret_access_key, config['secret_access_key']
-      end
-      set :ec2_region, config['regions'] if config['regions']
-
-      set :ec2_filter_by_status_ok?, config['filter_by_status_ok?'] if config['filter_by_status_ok?']
+      CONFIG_SETTINGS.each { |key, setting| set setting, config[key] if config[key] }
+      load_config_credentials(config)
     end
 
     def get_regions(regions_array = nil)
       return regions_array unless regions_array.nil? || regions_array.empty?
 
       raise 'You must specify at least one EC2 region.'
+    end
+
+    private
+
+    def read_config_file
+      return unless fetch(:ec2_config)
+
+      config_location = File.expand_path(fetch(:ec2_config), Dir.pwd)
+      return unless File.exist?(config_location)
+
+      YAML.safe_load(ERB.new(File.read(config_location)).result, aliases: true)
+    end
+
+    # Keys in the YAML file take precedence over :ec2_profile.
+    def load_config_credentials(config)
+      return unless config['access_key_id'] && config['secret_access_key']
+
+      set :ec2_profile, nil
+      set :ec2_access_key_id, config['access_key_id']
+      set :ec2_secret_access_key, config['secret_access_key']
     end
   end
 end
